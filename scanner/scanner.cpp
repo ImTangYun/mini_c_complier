@@ -37,6 +37,7 @@ void Scanner::Init()
     key_word_dict_["long"] = (int32_t)KEYWORD;
     key_word_dict_["short"] = (int32_t)KEYWORD;
     key_word_dict_["true"] = (int32_t)KEYWORD;
+    key_word_dict_["NULL"] = (int32_t)KEYWORD;
     key_word_dict_["false"] = (int32_t)KEYWORD;
     key_word_dict_["#include"] = (int32_t)KEYWORD;
     key_word_dict_["typdef"] = (int32_t)KEYWORD;
