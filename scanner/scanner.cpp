@@ -39,6 +39,7 @@ void Scanner::Init()
     key_word_dict_["true"] = (int32_t)KEYWORD;
     key_word_dict_["false"] = (int32_t)KEYWORD;
     key_word_dict_["#include"] = (int32_t)KEYWORD;
+    key_word_dict_["typdef"] = (int32_t)KEYWORD;
 }
 void Scanner::getNextToken()
 {
@@ -70,13 +71,17 @@ void Scanner::getNextToken()
     // delimiters
     } else if (next_char == '(' || next_char == ')' ||
             next_char == '{' || next_char == '}' ||
-            next_char == ',' || next_char == ':') {
+            next_char == '.' || next_char == '?' ||
+            next_char == ',') {
         temp_word_ += next_char;
         delimiterOpration();
         temp_word_.clear();
         flag_ = 0;
         return;
-
+    // / /= // /*...*/
+    } else if (next_char == '/') {
+        temp_word_ += next_char;
+        slashOpration();
     // number operation
     } else if (next_char >= '0' && next_char <= '9') {
         temp_word_ += next_char;
@@ -97,8 +102,10 @@ void Scanner::getNextToken()
     ret = binaryOprator(next_char, next_char2, '-', '=', (int32_t)OPRATION, ret);
     ret = binaryOprator(next_char, next_char2, '+', '+', (int32_t)OPRATION, ret);
     ret = binaryOprator(next_char, next_char2, '-', '-', (int32_t)OPRATION, ret);
-    ret = binaryOprator(next_char, next_char2, '/', '=', (int32_t)OPRATION, ret);
+    // ret = binaryOprator(next_char, next_char2, '/', '=', (int32_t)OPRATION, ret);
     ret = binaryOprator(next_char, next_char2, '*', '=', (int32_t)OPRATION, ret);
+    ret = binaryOprator(next_char, next_char2, '-', '>', (int32_t)OPRATION, ret);
+    ret = binaryOprator(next_char, next_char2, ':', ':', (int32_t)OPRATION, ret);
     if (ret == 1) {
         token_.setContent(path_, line_, temp_word_, (int32_t)OPRATION);
         flag_ = 0;
@@ -184,4 +191,15 @@ void Scanner::numberOpration()
 bool Scanner::eof()
 {
     return eof_;
+}
+void Scanner::slashOpration()
+{
+    if (buffer_.eof()) {
+        eof_ = true;
+        return;
+    }
+    char next_char = buffer_.get();
+    if (next_char == '=') {
+        
+    }
 }
