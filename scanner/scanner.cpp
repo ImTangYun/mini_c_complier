@@ -81,7 +81,10 @@ void Scanner::getNextToken()
     // / /= // /*...*/
     } else if (next_char == '/') {
         temp_word_ += next_char;
-        slashOpration();
+        if (slashOpration()) {
+            getNextToken();
+        }
+        return;
     // number operation
     } else if (next_char >= '0' && next_char <= '9') {
         temp_word_ += next_char;
@@ -192,14 +195,51 @@ bool Scanner::eof()
 {
     return eof_;
 }
-void Scanner::slashOpration()
+bool Scanner::slashOpration()
 {
     if (buffer_.eof()) {
         eof_ = true;
-        return;
+        return false;
     }
     char next_char = buffer_.get();
     if (next_char == '=') {
-        
+        temp_word_ += next_char;
+        token_.setContent(path_, line_, temp_word_, (int32_t)OPRATION);
+        temp_word_.clear();
+    } else if (next_char == '/') {
+        temp_word_.clear();
+        while (!buffer_.eof() && next_char != '\n') {
+            next_char = buffer_.get();
+            if (next_char == '\n') ++line_;
+            if (next_char == '\n') return true;
+        }
+        if (buffer_.eof()) {
+            eof_ = true;
+            return false;
+        }
+    } else if (next_char == '*') {
+        while (!buffer_.eof()) {
+            next_char = buffer_.get();
+            if (next_char == '\n') ++line_;
+            if (next_char == '*') {
+                if (buffer_.eof()) {
+                    eof_ = true;
+                    return false;
+                }
+                next_char = buffer_.get();
+                if (next_char == '/') {
+                    temp_word_.clear();
+                    return true;
+                } else if (next_char == '\n') {
+                    ++line_;
+                }
+            }
+        }
+    } else {
+        token_.setContent(path_, line_, temp_word_, (int32_t)OPRATION);
+        flag_ = 1;
+        tmp_ = temp_word_[0];
+        temp_word_.clear();
     }
+    return false;
 }

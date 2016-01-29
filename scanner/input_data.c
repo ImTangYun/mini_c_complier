@@ -1,3 +1,8 @@
+// this is some comment
+// this is also some comment
+
+/* a nother type of comment*/
+
 void foo()
 {
     for (int i = 0; i < 100; ++i) {
